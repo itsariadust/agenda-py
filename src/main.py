@@ -32,6 +32,7 @@ class Event:
         self.all_day = all_day
         self.start_date = start_date
         self.end_date = end_date
+        self.completed = completed
 
 
     def __repr__(self):
@@ -46,7 +47,8 @@ class Event:
                 f"All Day: {'Yes' if self.all_day == 'yes' else 'No'}\n"
                 f"Start Date: {self.start_date}\n"
                 f"End Date: {self.end_date}\n"
-                f"Event Description: {self.description}")
+                f"Event Description: {self.description}\n"
+                f"Completed: {self.completed}")
 
 
 class Agenda:
