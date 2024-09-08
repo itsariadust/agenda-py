@@ -137,7 +137,6 @@ class Agenda:
                 upcoming_events.append(event)
 
         if upcoming_events:
-            print("\nEvents:")
             for event in upcoming_events:
                 print(event)
                 print("-" * 30)
@@ -149,13 +148,14 @@ def main():
     agenda = Agenda()
 
     while True:
-        print("Agenda")
+        agenda.show_events()
+
+        print("\nAgenda")
         print("-" * 20)
         print("1. Add Event")
         print("2. Remove Event")
         print("3. Edit Event")
-        print("4. Show events")
-        print("5. Exit")
+        print("4. Exit")
         choice = int(input("Enter your choice: "))
 
         match choice:
@@ -166,8 +166,6 @@ def main():
             case 3:
                 agenda.edit_event()
             case 4:
-                agenda.show_events()
-            case 5:
                 print("Exiting...")
                 exit()
             case _:
