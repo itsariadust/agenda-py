@@ -96,12 +96,42 @@ class Agenda:
         edit_event_id = input("Enter the event ID of the event that you wish to edit: ")
         if edit_event_id in self.events:
             event = self.events[edit_event_id]
-            print(event)
-            print(event.name)
-            print(event.description)
-            print(event.all_day)
-            print(event.start_date)
-            print(event.end_date)
+
+            new_event_name = input("Enter new event name: ") or event.name
+            new_event_desc = input("Enter new event description: ") or event.description
+
+            def get_date_input(prompt, fallback, time_suffix=""):
+                date_input = input(prompt) or None
+                if date_input:
+                    return datetime.strptime(date_input + time_suffix, '%Y-%m-%d %H:%M')
+                return fallback
+
+            if event.all_day == 'yes':
+                new_event_all_day_prompt = input("Keep this an all-day event? (yes/no): ").lower()
+
+                if new_event_all_day_prompt == 'yes':
+                    new_start_date = get_date_input("Enter new event start date: ", event.start_date, " 00:00")
+                    new_end_date = get_date_input("Enter new event end date: ", event.end_date, " 00:00")
+                elif new_event_all_day_prompt == 'no':
+                    new_start_date = get_date_input("Enter new event start date (with time): ", event.start_date)
+                    new_end_date = get_date_input("Enter new event end date (with time): ", event.end_date)
+
+            elif event.all_day == 'no':
+                new_event_all_day_prompt = input("Make this an all-day event? (yes/no): ").lower()
+
+                if new_event_all_day_prompt == 'no':
+                    new_start_date = get_date_input("Enter new event start date (with time): ", event.start_date)
+                    new_end_date = get_date_input("Enter new event end date (with time): ", event.end_date)
+                elif new_event_all_day_prompt == 'yes':
+                    new_start_date = get_date_input("Enter new event start date: ", event.start_date, " 00:00")
+                    new_end_date = get_date_input("Enter new event end date: ", event.end_date, " 00:00")
+
+            self.events[edit_event_id] = Event(edit_event_id, new_event_name, new_event_desc, event.all_day,
+                                               new_start_date, new_end_date)
+            self.save_agenda()
+            print(f"Event with ID '{edit_event_id}' has been edited successfully.")
+        else:
+            print(f"No event with ID '{edit_event_id}' was found.")
 
     def show_events(self):
         today = datetime.now()
