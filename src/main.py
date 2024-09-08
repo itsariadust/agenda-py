@@ -88,15 +88,22 @@ class Agenda:
             event_start_date = input("Enter start date (MM-DD-YYYY HH:MM format): ")
             event_end_date = input("Enter end date (MM-DD-YYYY HH:MM format): ")
 
+        # Parse date data wit datetime
         event_start_date = datetime.strptime(event_start_date, '%m-%d-%Y %H:%M')
         event_end_date = datetime.strptime(event_end_date, '%m-%d-%Y %H:%M')
 
+        # Generate a unique ID (UID)
         event_id = self.generate_id()
-        event = Event(event_id, event_name, event_description, event_all_day, event_start_date, event_end_date)
 
-        self.events[event_id] = event
+        # Create an Event object inside the event_data variable
+        event_data = Event(event_id, event_name, event_description, event_all_day, event_start_date, event_end_date)
+
+        # Insert event_data to the dictionary with the event ID as its key. event_data is the value of the key.
+        self.events[event_id] = event_data
 
         print(f"Event '{event_name}' with ID '{event_id}' was added successfully!")
+
+        # Save any changes to the pickle file.
         self.save_agenda()
 
     def remove_event(self):
