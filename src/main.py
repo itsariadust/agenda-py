@@ -5,27 +5,9 @@ import pickle
 
 
 class Event:
-    """
-    The class exists to represent the event in a more object-oriented way.
-
-    Attributes:
-        name (str): The name of the event.
-        description (str): The description of the event.
-        all_day (str): Shows if the event is a day-long event or not.
-        start_date (datetime): The starting date of the event.
-        end_date (datetime): The ending date of the event.
-    """
-    def __init__(self, uid, name, description, all_day, start_date, end_date):
-        """
-        This initializes the class and its properties.
-
-        Parameters:
-            name (str): The name of the event.
-            description (str): The description of the event.
-            all_day (str): Shows if the event is a day-long event or not.
-            start_date (datetime): The starting date of the event.
-            end_date (datetime): The ending date of the event.
-        """
+    # The class exists to represent the event in a more object-oriented way.
+    def __init__(self, uid, name, description, all_day, start_date, end_date, completed = False):
+        # This initializes the class and its properties.
         self.id = uid
         self.name = name
         self.description = description
@@ -36,13 +18,11 @@ class Event:
 
 
     def __repr__(self):
-        """
-        This makes the class more readable instead of throwing gibberish.
-
-        Instead of it looking like <__main__.Event object at 0x00000269E2FD9A50>,
-        which is some kind of memory address, it looks more like the readable representation below here.
-        That's why it's in the __repr__ function.
-        """
+        # This makes the class more readable instead of throwing gibberish.
+        #
+        # Instead of it looking like <__main__.Event object at 0x00000269E2FD9A50>,
+        # which is some kind of memory address, it looks more like the readable representation below here.
+        # That's why it's in the __repr__ function.
         return (f"Event Title: {self.name} ({self.id})\n"
                 f"All Day: {'Yes' if self.all_day == 'yes' else 'No'}\n"
                 f"Start Date: {self.start_date}\n"
@@ -52,11 +32,6 @@ class Event:
 
 
 class Agenda:
-    """
-    This class containerizes all the important program functions into one class.
-
-    When initialized, it will create a dictionary accessible inside this class only.
-    """
     def __init__(self, filename = 'agendafile.pkl'):
         self.filename = filename
         self.events = {}
