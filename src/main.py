@@ -55,6 +55,9 @@ class Agenda:
     """
     def __init__(self):
         self.events = {}
+    def generate_id(self):
+        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+
 
     def add_event(self):
         event_name = input("Enter event name: ")
@@ -72,8 +75,8 @@ class Agenda:
         event_start_date = datetime.strptime(event_start_date, '%m-%d-%Y %H:%M')
         event_end_date = datetime.strptime(event_end_date, '%m-%d-%Y %H:%M')
 
-        event = Event(event_name, event_description, event_all_day, event_start_date, event_end_date)
-        event_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+        event_id = self.generate_id()
+        event = Event(event_id, event_name, event_description, event_all_day, event_start_date, event_end_date)
 
         self.events[event_id] = event
 
