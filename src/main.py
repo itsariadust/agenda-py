@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import string
 import random
+import pickle
 
 
 class Event:
@@ -14,7 +15,7 @@ class Event:
         start_date (datetime): The starting date of the event.
         end_date (datetime): The ending date of the event.
     """
-    def __init__(self, name, description, all_day, start_date, end_date):
+    def __init__(self, uid, name, description, all_day, start_date, end_date):
         """
         This initializes the class and its properties.
 
@@ -25,6 +26,7 @@ class Event:
             start_date (datetime): The starting date of the event.
             end_date (datetime): The ending date of the event.
         """
+        self.id = uid
         self.name = name
         self.description = description
         self.all_day = all_day
@@ -40,7 +42,7 @@ class Event:
         which is some kind of memory address, it looks more like the readable representation below here.
         That's why it's in the __repr__ function.
         """
-        return (f"Event Title: {self.name}\n"
+        return (f"Event Title: {self.name} ({self.id})\n"
                 f"All Day: {'Yes' if self.all_day == 'yes' else 'No'}\n"
                 f"Start Date: {self.start_date}\n"
                 f"End Date: {self.end_date}\n"
@@ -53,11 +55,25 @@ class Agenda:
 
     When initialized, it will create a dictionary accessible inside this class only.
     """
-    def __init__(self):
+    def __init__(self, filename = 'agendafile.pkl'):
+        self.filename = filename
         self.events = {}
+        self.load_agenda()
+
     def generate_id(self):
         return ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
 
+    def save_agenda(self):
+        with open(self.filename, 'wb') as file:
+            pickle.dump(self.events, file)
+
+    def load_agenda(self):
+        try:
+            with open(self.filename, 'rb') as file:
+                self.events = pickle.load(file)
+            print(f"Agenda loaded from {self.filename}")
+        except FileNotFoundError:
+            print("No agenda file found. Creating a new one.")
 
     def add_event(self):
         event_name = input("Enter event name: ")
@@ -81,7 +97,7 @@ class Agenda:
         self.events[event_id] = event
 
         print(f"Event '{event_name}' with ID '{event_id}' was added successfully!")
-        print(self.events)
+        self.save_agenda()
 
     def remove_event(self):
         remove_event_id = input("Enter the event ID to remove the event: ")
