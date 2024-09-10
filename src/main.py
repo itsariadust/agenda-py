@@ -66,11 +66,11 @@ class Agenda:
         # Helper functions to clean up the code
         def get_date(prompt):
             date_str = input(prompt)
-            return datetime.strptime(date_str, '%m-%d-%Y')
+            return datetime.strptime(date_str, '%m-%d-%Y').date()
 
         def get_time(prompt):
             time_str = input(prompt) or '00:00'
-            return datetime.strptime(time_str, '%H:%M')
+            return datetime.strptime(time_str, '%H:%M').time()
 
         event_start_date = get_date("Enter start date (MM-DD-YYYY): ")
         event_end_date = get_date("Enter end date (MM-DD-YYYY): ")
@@ -79,7 +79,7 @@ class Agenda:
             event_start_time = get_time("Enter start time (24-hour format, HH:MM): ")
             event_end_time = get_time("Enter end time (24-hour format, HH:MM): ")
         else:
-            event_start_time = event_end_time = datetime.strptime('00:00','%H:%M')
+            event_start_time = event_end_time = datetime.strptime('00:00','%H:%M').time()
 
         # Generate a unique ID (UID)
         event_id = self.generate_id()
@@ -147,7 +147,7 @@ class Agenda:
             print(f"No event with ID '{edit_event_id}' was found.")
 
     def show_events(self):
-        today = datetime.now()
+        today = datetime.now().date()
         upcoming_events = []
 
         for event in self.events.values():
