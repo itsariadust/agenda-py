@@ -69,9 +69,10 @@ class Agenda:
     def remove_event(self):
         remove_event_id = input("Enter the event ID to remove the event: ")
 
-        if remove_event_id in self.events[remove_event_id]:
+        if remove_event_id in self.events:
             del self.events[remove_event_id]
             print(f"Event with event ID '{remove_event_id} has been successfully removed.")
+            self.save_agenda()
         else:
             print("Event not found. Please try again.")
 
