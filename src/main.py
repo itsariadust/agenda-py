@@ -155,6 +155,7 @@ class Agenda:
                 upcoming_events.append(event)
 
         if upcoming_events:
+            print("\nUpcoming Events:")
             for event in upcoming_events:
                 print(event)
                 print("-" * 30)
