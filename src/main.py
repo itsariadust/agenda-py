@@ -133,19 +133,25 @@ class Agenda:
         else:
             print("No upcoming events.")
 
+    def search_event(self):
+        find_event_id = input("Enter the ID of the event that you want to search: ")
+        if find_event_id in self.events:
+            print(self.events[find_event_id])
+        else:
+            print("Event not found.")
 
 def main():
     agenda = Agenda()
 
     while True:
-        agenda.show_events()
-
         print("\nAgenda")
         print("-" * 20)
         print("1. Add Event")
         print("2. Remove Event")
         print("3. Edit Event")
-        print("4. Exit")
+        print("4. Search Event")
+        print("5. Show Events")
+        print("6. Exit")
         choice = int(input("Enter your choice: "))
 
         match choice:
@@ -156,6 +162,10 @@ def main():
             case 3:
                 agenda.edit_event()
             case 4:
+                agenda.search_event()
+            case 5:
+                agenda.show_events()
+            case 6:
                 print("Exiting...")
                 exit()
             case _:
