@@ -6,7 +6,9 @@ import pickle
 
 class Event:
     # The class exists to represent the event in a more object-oriented way.
-    def __init__(self, uid, name, description, all_day, start_date, end_date, completed = False):
+    def __init__(self, uid, name, description,
+                 all_day, start_date, end_date,
+                 start_time, end_time, completed = False):
         # This initializes the class and its properties.
         self.id = uid
         self.name = name
@@ -14,6 +16,8 @@ class Event:
         self.all_day = all_day
         self.start_date = start_date
         self.end_date = end_date
+        self.start_time = start_time
+        self.end_time = end_time
         self.completed = completed
 
 
@@ -25,10 +29,10 @@ class Event:
         # That's why it's in the __repr__ function.
         return (f"Event Title: {self.name} ({self.id})\n"
                 f"All Day: {'Yes' if self.all_day == 'yes' else 'No'}\n"
-                f"Start Date: {self.start_date}\n"
-                f"End Date: {self.end_date}\n"
+                f"Start Date: {self.start_date} ({self.start_time})\n"
+                f"End Date: {self.end_date} ({self.end_time})\n"
                 f"Event Description: {self.description}\n"
-                f"Completed: {self.completed}")
+                f"Completed: {'Yes' if self.completed == True else 'No'}")
 
 
 class Agenda:
@@ -58,24 +62,33 @@ class Agenda:
         if event_description == '':
             event_description = "No description given."
         event_all_day = input("Is this an all day event? ").lower()
-        if event_all_day == "yes":
-            event_start_date = input("What day will this event occur? ") + " 00:00"
-            event_end_date = input("What day will this event end? ") + " 00:00"
-        elif event_all_day == "no":
-            event_start_date = input("Enter start date (MM-DD-YYYY HH:MM format): ")
-            event_end_date = input("Enter end date (MM-DD-YYYY HH:MM format): ")
 
-        # Parse date data wit datetime
-        event_start_date = datetime.strptime(event_start_date, '%m-%d-%Y %H:%M')
-        event_end_date = datetime.strptime(event_end_date, '%m-%d-%Y %H:%M')
+        # Helper functions to clean up the code
+        def get_date(prompt):
+            date_str = input(prompt)
+            return datetime.strptime(date_str, '%m-%d-%Y')
+
+        def get_time(prompt):
+            time_str = input(prompt) or '00:00'
+            return datetime.strptime(time_str, '%H:%M')
+
+        event_start_date = get_date("Enter start date (MM-DD-YYYY): ")
+        event_end_date = get_date("Enter end date (MM-DD-YYYY): ")
+
+        if event_all_day == "no":
+            event_start_time = get_time("Enter start time (24-hour format, HH:MM): ")
+            event_end_time = get_time("Enter end time (24-hour format, HH:MM): ")
+        else:
+            event_start_time = event_end_time = datetime.strptime('00:00','%H:%M')
 
         # Generate a unique ID (UID)
         event_id = self.generate_id()
 
         # Create an Event object inside the event_data variable
-        event_data = Event(event_id, event_name, event_description, event_all_day, event_start_date, event_end_date)
+        event_data = Event(event_id, event_name, event_description,
+                           event_all_day, event_start_date, event_end_date,
+                           event_start_time, event_end_time)
 
-        # Insert event_data to the dictionary with the event ID as its key. event_data is the value of the key.
         self.events[event_id] = event_data
 
         print(f"Event '{event_name}' with ID '{event_id}' was added successfully!")
