@@ -155,12 +155,13 @@ class Agenda:
                 upcoming_events.append(event)
 
         if upcoming_events:
-            print("\nUpcoming Events:")
+            print("Upcoming Events:")
             for event in upcoming_events:
-                print(event)
                 print("-" * 30)
+                print(event)
         else:
             print("No upcoming events.")
+        print("-" * 30 + "\n")
 
     def search_event(self):
         find_event_id = input("Enter the ID of the event that you want to search: ")
@@ -173,8 +174,8 @@ def main():
     agenda = Agenda()
 
     while True:
-        print("\nAgenda")
-        print("-" * 20)
+        print("Agenda")
+        print("-" * 30)
         print("1. Add Event")
         print("2. Remove Event")
         print("3. Edit Event")
