@@ -5,30 +5,46 @@ import pickle
 
 
 class Event:
-    # The class exists to represent the event in a more object-oriented way.
     def __init__(self, uid, name, description,
-                 all_day, start_date, end_date,
-                 start_time, end_time, completed = False):
-        # This initializes the class and its properties.
+                 start_date, end_date,
+                 completed = False):
         self.id = uid
         self.name = name
         self.description = description
-        self.all_day = all_day
         self.start_date = start_date
         self.end_date = end_date
-        self.start_time = start_time
-        self.end_time = end_time
         self.completed = completed
 
+    def __repr__(self):
+        return (f"Event Title: {self.name} ({self.id})\n"
+                f"Start Date: {self.start_date}\n"
+                f"End Date: {self.end_date}\n"
+                f"Event Description: {self.description}\n"
+                f"Completed: {'Yes' if self.completed == True else 'No'}")
+    
+class AllDayEvent(Event):
+    def __init__(self, uid, name, description, all_day, start_date, end_date, completed=False):
+        super().__init__(uid, name, description, start_date, end_date, completed)
+        self.all_day = all_day
 
     def __repr__(self):
-        # This makes the class more readable instead of throwing gibberish.
-        #
-        # Instead of it looking like <__main__.Event object at 0x00000269E2FD9A50>,
-        # which is some kind of memory address, it looks more like the readable representation below here.
-        # That's why it's in the __repr__ function.
         return (f"Event Title: {self.name} ({self.id})\n"
-                f"All Day: {'Yes' if self.all_day == 'yes' else 'No'}\n"
+                f"All Day: Yes\n"
+                f"Start Date: {self.start_date}\n"
+                f"End Date: {self.end_date}\n"
+                f"Event Description: {self.description}\n"
+                f"Completed: {'Yes' if self.completed == True else 'No'}")
+
+class TimedEvent(Event):
+    def __init__(self, uid, name, description, all_day, start_date, end_date, start_time, end_time, completed=False):
+        super().__init__(uid, name, description, start_date, end_date, completed)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.all_day = all_day
+        
+    def __repr__(self):
+        return (f"Event Title: {self.name} ({self.id})\n"
+                f"All Day: No\n"
                 f"Start Date: {self.start_date} ({self.start_time})\n"
                 f"End Date: {self.end_date} ({self.end_time})\n"
                 f"Event Description: {self.description}\n"
@@ -56,37 +72,40 @@ class Agenda:
             print("No agenda file found. Creating a new one.")
 
     def add_event(self):
+        event_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+
         event_name = input("Enter event name: ")
-        event_description = input("Enter event description. If none, press enter: ")
-        if event_description == '':
-            event_description = "No description given."
+        event_description = input("Enter event description. If none, press enter: ") or "No description given."
+
         event_all_day = input("Is this an all day event? ").lower()
 
         # Helper functions to clean up the code
         def get_date(prompt):
-            date_str = input(prompt)
-            return datetime.strptime(date_str, '%m-%d-%Y').date()
+            date_input = input(prompt)
+            return datetime.strptime(date_input, '%m-%d-%Y').date()
 
         def get_time(prompt):
-            time_str = input(prompt) or '00:00'
-            return datetime.strptime(time_str, '%H:%M').time()
-
+            time_input = input(prompt) or '00:00'
+            return datetime.strptime(time_input, '%H:%M').time()
+        
         event_start_date = get_date("Enter start date (MM-DD-YYYY): ")
         event_end_date = get_date("Enter end date (MM-DD-YYYY): ")
 
         if event_all_day == "no":
+            event_all_day = False
             event_start_time = get_time("Enter start time (24-hour format, HH:MM): ")
             event_end_time = get_time("Enter end time (24-hour format, HH:MM): ")
+
+            # Create a TimedEvent object inside the event_data variable
+            event_data = TimedEvent(event_id, event_name, event_description,
+                                    event_all_day, event_start_date, event_end_date,
+                                    event_start_time, event_end_time)
         else:
-            event_start_time = event_end_time = datetime.strptime('00:00','%H:%M').time()
+            event_all_day = True
 
-        # Generate a unique ID (UID)
-        event_id = self.generate_id()
-
-        # Create an Event object inside the event_data variable
-        event_data = Event(event_id, event_name, event_description,
-                           event_all_day, event_start_date, event_end_date,
-                           event_start_time, event_end_time)
+            # Create an AllDayEvent object inside the event_data variable
+            event_data = AllDayEvent(event_id, event_name, event_description,
+                                    event_all_day, event_start_date, event_end_date)
 
         self.events[event_id] = event_data
 
@@ -110,37 +129,35 @@ class Agenda:
         if edit_event_id in self.events:
             event = self.events[edit_event_id]
 
-            new_event_name = input("Enter new event name: ") or event.name
-            new_event_desc = input("Enter new event description: ") or event.description
+            new_event_name = input("Enter new event name. If none, press enter: ") or event.name
+            new_event_desc = input("Enter new event description. If none, press enter: ") or event.description
 
-            def get_date_input(prompt, fallback, time_suffix=""):
+            def get_new_date(prompt):
                 date_input = input(prompt) or None
-                if date_input:
-                    return datetime.strptime(date_input + time_suffix, '%Y-%m-%d %H:%M')
-                return fallback
+                return datetime.strptime(date_input, '%m-%d-%Y').date()
+        
+            def get_new_time(prompt):
+                time_input = input(prompt) or '00:00' or None
+                return datetime.strptime(time_input, '%H:%M').time()
+            
+            new_start_date = get_new_date("Enter new event start date. If none, press enter: ") or event.start_date
+            new_end_date = get_new_date("Enter new event end date. If none, press enter: ") or event.end_date
 
-            if event.all_day == 'yes':
-                new_event_all_day_prompt = input("Keep this an all-day event? (yes/no): ").lower()
+            all_day_prompt = input("Will this be an all day event or not? ").lower()
 
-                if new_event_all_day_prompt == 'yes':
-                    new_start_date = get_date_input("Enter new event start date: ", event.start_date, " 00:00")
-                    new_end_date = get_date_input("Enter new event end date: ", event.end_date, " 00:00")
-                elif new_event_all_day_prompt == 'no':
-                    new_start_date = get_date_input("Enter new event start date (with time): ", event.start_date)
-                    new_end_date = get_date_input("Enter new event end date (with time): ", event.end_date)
+            if all_day_prompt == 'yes':
+                all_day = True
+                new_event_data = AllDayEvent(edit_event_id, new_event_name, new_event_desc,
+                                             all_day, new_start_date, new_end_date)
+            else:
+                all_day = False
+                new_start_time = get_new_time("Enter new event start time (HH:MM format): ") or event.start_time
+                new_end_time = get_new_time("Enter new event end time (HH:MM format): ") or event.end_time
+                new_event_data = TimedEvent(edit_event_id, new_event_name, new_event_desc,
+                                            all_day, new_start_date, new_end_date,
+                                            new_start_time, new_end_time)
 
-            elif event.all_day == 'no':
-                new_event_all_day_prompt = input("Make this an all-day event? (yes/no): ").lower()
-
-                if new_event_all_day_prompt == 'no':
-                    new_start_date = get_date_input("Enter new event start date (with time): ", event.start_date)
-                    new_end_date = get_date_input("Enter new event end date (with time): ", event.end_date)
-                elif new_event_all_day_prompt == 'yes':
-                    new_start_date = get_date_input("Enter new event start date: ", event.start_date, " 00:00")
-                    new_end_date = get_date_input("Enter new event end date: ", event.end_date, " 00:00")
-
-            self.events[edit_event_id] = Event(edit_event_id, new_event_name, new_event_desc, event.all_day,
-                                               new_start_date, new_end_date)
+            self.events[edit_event_id] = new_event_data
             self.save_agenda()
             print(f"Event with ID '{edit_event_id}' has been edited successfully.")
         else:
