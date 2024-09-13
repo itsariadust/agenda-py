@@ -5,9 +5,9 @@ import pickle
 
 
 class Event:
-    def __init__(self, uid, name, description,
-                 start_date, end_date,
-                 completed = False):
+    def __init__(self, uid: str, name: str, description: str,
+                 start_date: datetime.date, end_date: datetime.date,
+                 completed: bool = False):
         self.id = uid
         self.name = name
         self.description = description
@@ -23,20 +23,24 @@ class Event:
                 f"Completed: {'Yes' if self.completed == True else 'No'}")
     
 class AllDayEvent(Event):
-    def __init__(self, uid, name, description, all_day, start_date, end_date, completed=False):
+    def __init__(self, uid: str, name: str, description: str,
+                 all_day: bool, start_date: datetime.date, end_date: datetime.date, 
+                 completed: bool = False):
         super().__init__(uid, name, description, start_date, end_date, completed)
         self.all_day = all_day
 
     def __repr__(self):
         return (f"Event Title: {self.name} ({self.id})\n"
-                f"All Day: Yes\n"
+                f"All Day: {'Yes' if self.all_day == True else 'No'}\n"
                 f"Start Date: {self.start_date}\n"
                 f"End Date: {self.end_date}\n"
                 f"Event Description: {self.description}\n"
                 f"Completed: {'Yes' if self.completed == True else 'No'}")
 
 class TimedEvent(Event):
-    def __init__(self, uid, name, description, all_day, start_date, end_date, start_time, end_time, completed=False):
+    def __init__(self, uid: str, name: str, description: str,
+                 all_day: bool, start_date: datetime.date, end_date: datetime.date,
+                 start_time: datetime.time, end_time: datetime.time, completed: bool = False):
         super().__init__(uid, name, description, start_date, end_date, completed)
         self.start_time = start_time
         self.end_time = end_time
@@ -44,7 +48,7 @@ class TimedEvent(Event):
         
     def __repr__(self):
         return (f"Event Title: {self.name} ({self.id})\n"
-                f"All Day: No\n"
+                f"All Day: {'No' if self.all_day == False else 'yes'}\n"
                 f"Start Date: {self.start_date} ({self.start_time})\n"
                 f"End Date: {self.end_date} ({self.end_time})\n"
                 f"Event Description: {self.description}\n"
@@ -55,9 +59,6 @@ class Agenda:
         self.filename = filename
         self.events = {}
         self.load_agenda()
-
-    def generate_id(self):
-        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
 
     def save_agenda(self):
         with open(self.filename, 'wb') as file:
