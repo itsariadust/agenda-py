@@ -58,7 +58,9 @@ class Agenda:
     def __init__(self, filename = 'agendafile.pkl'):
         self.filename = filename
         self.events = {}
+        self.event_index = {}
         self.load_agenda()
+        self.rebuild_index()
 
     def save_agenda(self):
         with open(self.filename, 'wb') as file : pickle.dump(self.events, file)
@@ -69,6 +71,11 @@ class Agenda:
             print(f"Agenda loaded from {self.filename}")
         except FileNotFoundError:
             print("No agenda file found. Creating a new one.")
+
+    def rebuild_index(self):
+        self.event_index = {event_id: (date, event_obj)
+                            for date, subdict in self.events.items()
+                            for event_id, event_obj in subdict.items()}
 
     def add_event(self):
         event_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
@@ -106,22 +113,31 @@ class Agenda:
             event_data = AllDayEvent(event_id, event_name, event_description,
                                     event_all_day, event_start_date, event_end_date)
 
-        self.events[event_id] = event_data
+        if event_start_date not in self.events:
+            self.events[event_start_date] = {}
+
+        self.events[event_start_date][event_id] = event_data
 
         print(f"Event '{event_name}' with ID '{event_id}' was added successfully!")
 
-        # Save any changes to the pickle file.
+        # Rebuild index and save any changes to the pickle file.
+        self.rebuild_index()
         self.save_agenda()
 
     def remove_event(self):
         remove_event_id = input("Enter the event ID to remove the event: ")
 
-        if remove_event_id not in self.events:
-            print("Event not found. Please try again.")
+        if remove_event_id not in self.event_index:
+            print("Event not found. Please try again.\n")
             return
 
-        del self.events[remove_event_id]
+        date, _ = self.event_index[remove_event_id]
+
+        del self.events[date][remove_event_id]
+        if not self.events[date] : del self.events[date]
+
         print(f"Event with event ID '{remove_event_id} has been successfully removed.")
+        self.rebuild_index()
         self.save_agenda()
 
     def edit_event(self):
@@ -137,11 +153,11 @@ class Agenda:
         edit_event_id = input("Enter the event ID of the event that you wish to edit: ")
 
         # Check if there is an event.
-        if edit_event_id not in self.events :
+        if edit_event_id not in self.event_index:
             print(f"No event with ID '{edit_event_id}' was found.")
             return
 
-        event = self.events[edit_event_id]
+        date, event = self.event_index[edit_event_id]
 
         new_event_name = input("Enter new event name. If none, press enter: ") or event.name
         new_event_desc = input("Enter new event description. If none, press enter: ") or event.description
@@ -163,29 +179,36 @@ class Agenda:
                                         all_day, new_start_date, new_end_date,
                                         new_start_time, new_end_time)
 
-        self.events[edit_event_id] = new_event_data
-        self.save_agenda()
+        self.events[date][edit_event_id] = new_event_data
+
         print(f"Event with ID '{edit_event_id}' has been edited successfully.")
+
+        self.rebuild_index()
+        self.save_agenda()
 
     def show_events(self):
         today = datetime.now().date()
-        upcoming_events = []
 
-        for event in self.events.values():
-            if today <= event.end_date <= today + timedelta(days=7) : upcoming_events.append(event)
+        upcoming_events = [
+            event for subdict in self.events.values()
+            for event in subdict.values()
+            if today <= event.end_date <= today + timedelta(days=7)
+        ]
 
-        print("Upcoming Events:" if upcoming_events else "No upcoming events.")
-        for event in upcoming_events or []:
-            print("-" * 30)
-            print(event)
+        print("\nUpcoming Events:" if upcoming_events else "\nNo upcoming events.")
+        for event in upcoming_events: print("-" * 30, event, sep="\n")
         print("-" * 30 + "\n")
+        print(self.event_index)
 
     def search_event(self):
         find_event_id = input("Enter the ID of the event that you want to search: ")
-        if find_event_id not in self.events:
+
+        if find_event_id not in self.event_index:
             print("Event not found.")
             return
-        print(self.events[find_event_id])
+        _, event = self.event_index[find_event_id]
+        print(f"Event found!\n"
+              f"{event}\n")
 
 def main():
     agenda = Agenda()
