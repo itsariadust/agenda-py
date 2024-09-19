@@ -14,13 +14,6 @@ class Event:
         self.start_date = start_date
         self.end_date = end_date
         self.completed = completed
-
-    def __repr__(self):
-        return (f"Event Title: {self.name} ({self.id})\n"
-                f"Start Date: {self.start_date}\n"
-                f"End Date: {self.end_date}\n"
-                f"Event Description: {self.description}\n"
-                f"Completed: {'Yes' if self.completed == True else 'No'}")
     
 class AllDayEvent(Event):
     def __init__(self, uid: str, name: str, description: str,
@@ -29,7 +22,7 @@ class AllDayEvent(Event):
         super().__init__(uid, name, description, start_date, end_date, completed)
         self.all_day = all_day
 
-    def __repr__(self):
+    def __str__(self):
         return (f"Event Title: {self.name} ({self.id})\n"
                 f"All Day: {'Yes' if self.all_day == True else 'No'}\n"
                 f"Start Date: {self.start_date}\n"
@@ -46,7 +39,7 @@ class TimedEvent(Event):
         self.end_time = end_time
         self.all_day = all_day
         
-    def __repr__(self):
+    def __str__(self):
         return (f"Event Title: {self.name} ({self.id})\n"
                 f"All Day: {'No' if self.all_day == False else 'yes'}\n"
                 f"Start Date: {self.start_date} ({self.start_time})\n"
