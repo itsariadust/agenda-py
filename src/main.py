@@ -143,12 +143,14 @@ class Agenda:
     def edit_event(self):
         # Some helper functions
         def get_new_date(prompt):
-            date_input = input(prompt) or None
-            return datetime.strptime(date_input, '%m-%d-%Y').date()
+            date_input = input(prompt)
+            if date_input: return datetime.strptime(date_input, '%m-%d-%Y').date()
+            else: return False
 
         def get_new_time(prompt):
-            time_input = input(prompt) or '00:00' or None
-            return datetime.strptime(time_input, '%H:%M').time()
+            time_input = input(prompt)
+            if time_input: return datetime.strptime(time_input, '%H:%M').time()
+            else: return False
 
         edit_event_id = input("Enter the event ID of the event that you wish to edit: ")
 
@@ -165,7 +167,7 @@ class Agenda:
         new_start_date = get_new_date("Enter new event start date. If none, press enter: ") or event.start_date
         new_end_date = get_new_date("Enter new event end date. If none, press enter: ") or event.end_date
 
-        all_day_prompt = input("Will this be an all day event or not? ").lower()
+        all_day_prompt = input("Will this be an all day event or not? ").lower() or 'No'
 
         if all_day_prompt == 'yes':
             all_day = True
