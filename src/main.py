@@ -30,6 +30,9 @@ class AllDayEvent(Event):
                 f"Event Description: {self.description}\n"
                 f"Completed: {'Yes' if self.completed == True else 'No'}")
 
+    def minified_str(self):
+        return f"{'All Day'.ljust(20)} {self.name} ({self.id})"
+
 class TimedEvent(Event):
     def __init__(self, uid: str, name: str, description: str,
                  all_day: bool, start_date: datetime.date, end_date: datetime.date,
@@ -46,6 +49,10 @@ class TimedEvent(Event):
                 f"End Date: {self.end_date} ({self.end_time})\n"
                 f"Event Description: {self.description}\n"
                 f"Completed: {'Yes' if self.completed == True else 'No'}")
+
+    def minified_str(self):
+        start_and_end_time_str = f"{self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
+        return f"{start_and_end_time_str.ljust(20)} {self.name} ({self.id})"
 
 class Agenda:
     def __init__(self, filename = 'agendafile.pkl'):
@@ -181,7 +188,7 @@ class Agenda:
         self.rebuild_index()
         self.save_agenda()
 
-    def show_events(self):
+    def show_upcoming_events(self):
         today = datetime.now().date()
 
         upcoming_events = [
@@ -190,10 +197,23 @@ class Agenda:
             if today <= event.end_date <= today + timedelta(days=7)
         ]
 
-        print("\nUpcoming Events:" if upcoming_events else "\nNo upcoming events.")
-        for event in upcoming_events: print("-" * 30, event, sep="\n")
+        if not upcoming_events:
+            print("\nNo upcoming events.\n")
+            return
+
+        sorted_events = sorted(upcoming_events,
+                               key=lambda e: (e.start_date, e.start_time if isinstance(e, TimedEvent) else time.min))
+
+        current_date = None
+        print(f"You currently have {len(sorted_events)} events.")
+        for event in sorted_events:
+            if event.start_date != current_date:
+                current_date = event.start_date
+                print(f"\n{current_date.strftime('%A, %b. %d')}")
+
+            print(event.minified_str())
+
         print("-" * 30 + "\n")
-        print(self.event_index)
 
     def search_event(self):
         find_event_id = input("Enter the ID of the event that you want to search: ")
@@ -215,8 +235,7 @@ def main():
         print("2. Remove Event")
         print("3. Edit Event")
         print("4. Search Event")
-        print("5. Show Events")
-        print("6. Exit")
+        print("5. Exit")
         choice = int(input("Enter your choice: "))
 
         match choice:
@@ -224,8 +243,7 @@ def main():
             case 2: agenda.remove_event()
             case 3: agenda.edit_event()
             case 4: agenda.search_event()
-            case 5: agenda.show_events()
-            case 6: print("Exiting...") or exit()
+            case 5: print("Exiting...") or exit()
             case _: print("Invalid choice. Enter a valid choice.")
 
 
