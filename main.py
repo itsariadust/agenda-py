@@ -16,10 +16,10 @@ class Agenda:
 
     @staticmethod
     def greeting():
-        current_time = datetime.now().strftime("%H:%M")
-        if time().strftime("%H:%M") < current_time < time(12, 00, 00).strftime("%H:%M"):
+        current_hour = datetime.now().hour
+        if current_hour < 12:
             day_greeting = "Good Morning"
-        elif time(12, 00, 00).strftime("%H:%M") < current_time < time(16, 00, 00).strftime("%H:%M"):
+        elif current_hour < 18:
             day_greeting = "Good Afternoon"
         else:
             day_greeting = "Good Evening"
