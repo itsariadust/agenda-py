@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import string
 import random
 import pickle
@@ -61,6 +61,20 @@ class Agenda:
         self.event_index = {}
         self.load_agenda()
         self.rebuild_index()
+        self.greeting()
+        self.show_upcoming_events()
+
+    @staticmethod
+    def greeting():
+        current_time = datetime.now().strftime("%H:%M")
+        if time().strftime("%H:%M") < current_time < time(12, 00, 00).strftime("%H:%M"):
+            day_greeting = "Good Morning"
+        elif time(12, 00, 00).strftime("%H:%M") < current_time < time(16, 00, 00).strftime("%H:%M"):
+            day_greeting = "Good Afternoon"
+        else:
+            day_greeting = "Good Evening"
+
+        print(f"{day_greeting}! Today is {datetime.now().strftime('%A, %B %d')}.")
 
     def save_agenda(self):
         with open(self.filename, 'wb') as file : pickle.dump(self.events, file)
@@ -68,7 +82,7 @@ class Agenda:
     def load_agenda(self):
         try:
             with open(self.filename, 'rb') as file : self.events = pickle.load(file)
-            print(f"Agenda loaded from {self.filename}")
+            # print(f"Agenda loaded from {self.filename}")
         except FileNotFoundError:
             print("No agenda file found. Creating a new one.")
 
