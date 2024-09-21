@@ -8,7 +8,7 @@ class EventRemove:
         
         if remove_event_id not in events_index:
             print("Event not found. Please try again.\n")
-            return
+            return events_dict
         
         date, _ = events_index[remove_event_id]
                 
