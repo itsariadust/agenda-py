@@ -1,5 +1,5 @@
 from event_create import EventCreate
-from event import TimedEvent, AllDayEvent
+from event_remove import EventRemove
 from datetime import datetime, timedelta, time
 from date_time_utils import get_date, get_time
 import pickle
@@ -48,18 +48,8 @@ class Agenda:
         self.save_agenda()
 
     def remove_event(self):
-        remove_event_id = input("Enter the event ID to remove the event: ")
-
-        if remove_event_id not in self.event_index:
-            print("Event not found. Please try again.\n")
-            return
-
-        date, _ = self.event_index[remove_event_id]
-
-        del self.events[date][remove_event_id]
-        if not self.events[date] : del self.events[date]
-
-        print(f"Event with event ID '{remove_event_id} has been successfully removed.")
+        event_remove = EventRemove()
+        event_remove.event_remover(self.events, self.event_index)
         self.rebuild_index()
         self.save_agenda()
 
