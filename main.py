@@ -60,21 +60,24 @@ class Agenda:
 
     def add_event(self):
         event_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-        date_today = datetime.strptime(datetime.now().strftime('%m-%d-%Y'), '%m-%d-%Y').date()
-        hour_today = datetime.strptime(datetime.now().strftime('%H-%M'), '%H-%M')
-        round_hour = self.hour_rounder(hour_today)
+        date_today = datetime.now()
+        round_hour = self.hour_rounder(date_today)
 
         event_name = input("Enter event name: ")
         event_description = input("Enter event description. If none, press enter: ") or "No description given."
-        event_all_day = input("Is this an all day event? ").lower()
+        event_all_day = input("Is this an all day event? ").lower() or "no"
         event_start_date = self.get_date("Enter start date (MM-DD-YYYY): ") or date_today
         event_end_date = self.get_date("Enter end date (MM-DD-YYYY): ") or date_today
 
         if event_all_day == "no":
             event_all_day = False
-            event_start_time = self.get_time("Enter start time (24-hour format): ") or round_hour.time()
+            event_start_time = self.get_time("Enter start time (24-hour format): ") or round_hour
             event_end_time = self.get_time("Enter end time (24-hour format): ") or round_hour + timedelta(hours=1)
-            event_end_time = event_end_time.time()
+
+            if event_start_time > event_start_date: event_start_date = event_start_time.date()
+            if event_end_time > event_end_date: event_end_date = event_end_time.date()
+
+            event_start_time, event_end_time = event_start_time.time(), event_end_time.time()
 
             event_data = TimedEvent(event_id, event_name, event_description,
                                     event_all_day, event_start_date, event_end_date,
