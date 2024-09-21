@@ -16,3 +16,5 @@ class EventRemove:
         if not events_dict[date] : del events_dict[date]
         
         print(f"Event with event ID '{remove_event_id}' has been successfully removed!")
+
+        return events_dict

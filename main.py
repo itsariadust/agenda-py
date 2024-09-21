@@ -50,7 +50,7 @@ class Agenda:
 
     def remove_event(self):
         event_remove = EventRemove()
-        event_remove.event_remover(self.events, self.event_index)
+        self.events = event_remove.event_remover(self.events, self.event_index)
         self.rebuild_index()
         self.save_agenda()
 
