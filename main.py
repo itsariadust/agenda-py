@@ -1,7 +1,7 @@
+from event import TimedEvent
 from event_create import EventCreate
 from event_remove import EventRemove
 from datetime import datetime, timedelta, time
-from date_time_utils import get_date, get_time
 import pickle
 
 class Agenda:
