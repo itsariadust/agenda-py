@@ -1,7 +1,6 @@
 from event import TimedEvent, AllDayEvent
 from datetime import datetime, timedelta, time
-import string
-import random
+from date_time_utils import get_date, get_time
 import pickle
 
 class Agenda:
@@ -128,8 +127,8 @@ class Agenda:
         new_event_name = input("Enter new event name. If none, press enter: ") or event.name
         new_event_desc = input("Enter new event description. If none, press enter: ") or event.description
 
-        new_start_date = self.get_date("Enter new event start date. If none, press enter: ") or event.start_date
-        new_end_date = self.get_date("Enter new event end date. If none, press enter: ") or event.end_date
+        new_start_date = get_date("Enter new event start date. If none, press enter: ") or event.start_date
+        new_end_date = get_date("Enter new event end date. If none, press enter: ") or event.end_date
 
         all_day_prompt = input("Will this be an all day event or not? ").lower() or 'No'
 
@@ -139,8 +138,8 @@ class Agenda:
                                          all_day, new_start_date, new_end_date)
         else:
             all_day = False
-            new_start_time = self.get_time("Enter new event start time (HH:MM format): ") or event.start_time
-            new_end_time = self.get_time("Enter new event end time (HH:MM format): ") or event.end_time
+            new_start_time = get_time("Enter new event start time (HH:MM format): ") or event.start_time
+            new_end_time = get_time("Enter new event end time (HH:MM format): ") or event.end_time
             new_event_data = TimedEvent(edit_event_id, new_event_name, new_event_desc,
                                         all_day, new_start_date, new_end_date,
                                         new_start_time, new_end_time)
