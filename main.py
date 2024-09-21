@@ -1,7 +1,8 @@
-from event import TimedEvent, AllDayEvent
+from event import TimedEvent
+from event_create import EventCreate
+from event_remove import EventRemove
+from event_edit import EventEdit
 from datetime import datetime, timedelta, time
-import string
-import random
 import pickle
 
 class Agenda:
@@ -41,114 +42,21 @@ class Agenda:
                             for date, subdict in self.events.items()
                             for event_id, event_obj in subdict.items()}
 
-    @staticmethod
-    def get_date(prompt):
-        date_input = input(prompt)
-        if date_input: return datetime.strptime(date_input, '%m-%d-%Y').date()
-        else: return False
-
-    @staticmethod
-    def get_time(prompt):
-        time_input = input(prompt)
-        if time_input: return datetime.strptime(time_input, '%H:%M').time()
-        else: return False
-
-    @staticmethod
-    def hour_rounder(t: datetime):
-        return (t.replace(second=0, microsecond=0, minute=0, hour=t.hour)
-                + timedelta(hours=1))
-
     def add_event(self):
-        event_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-        date_today = datetime.now()
-        round_hour = self.hour_rounder(date_today)
-
-        event_name = input("Enter event name: ")
-        event_description = input("Enter event description. If none, press enter: ") or "No description given."
-        event_all_day = input("Is this an all day event? ").lower() or "no"
-        event_start_date = self.get_date("Enter start date (MM-DD-YYYY): ") or date_today
-        event_end_date = self.get_date("Enter end date (MM-DD-YYYY): ") or date_today
-
-        if event_all_day == "no":
-            event_all_day = False
-            event_start_time = self.get_time("Enter start time (24-hour format): ") or round_hour
-            event_end_time = self.get_time("Enter end time (24-hour format): ") or round_hour + timedelta(hours=1)
-
-            if event_start_time > event_start_date: event_start_date = event_start_time.date()
-            if event_end_time > event_end_date: event_end_date = event_end_time.date()
-
-            event_start_time, event_end_time = event_start_time.time(), event_end_time.time()
-
-            event_data = TimedEvent(event_id, event_name, event_description,
-                                    event_all_day, event_start_date, event_end_date,
-                                    event_start_time, event_end_time)
-        else:
-            event_all_day = True
-
-            event_data = AllDayEvent(event_id, event_name, event_description,
-                                    event_all_day, event_start_date, event_end_date)
-
-        if event_start_date not in self.events:
-            self.events[event_start_date] = {}
-
-        self.events[event_start_date][event_id] = event_data
-
-        print(f"Event '{event_name}' with ID '{event_id}' was added successfully!")
-
-        # Rebuild index and save any changes to the pickle file.
+        event_create = EventCreate()
+        self.events = event_create.event_constructor(self.events)
         self.rebuild_index()
         self.save_agenda()
 
     def remove_event(self):
-        remove_event_id = input("Enter the event ID to remove the event: ")
-
-        if remove_event_id not in self.event_index:
-            print("Event not found. Please try again.\n")
-            return
-
-        date, _ = self.event_index[remove_event_id]
-
-        del self.events[date][remove_event_id]
-        if not self.events[date] : del self.events[date]
-
-        print(f"Event with event ID '{remove_event_id} has been successfully removed.")
+        event_remove = EventRemove()
+        self.events = event_remove.event_remover(self.events, self.event_index)
         self.rebuild_index()
         self.save_agenda()
 
     def edit_event(self):
-        edit_event_id = input("Enter the event ID of the event that you wish to edit: ")
-
-        # Check if there is an event.
-        if edit_event_id not in self.event_index:
-            print(f"No event with ID '{edit_event_id}' was found.")
-            return
-
-        date, event = self.event_index[edit_event_id]
-
-        new_event_name = input("Enter new event name. If none, press enter: ") or event.name
-        new_event_desc = input("Enter new event description. If none, press enter: ") or event.description
-
-        new_start_date = self.get_date("Enter new event start date. If none, press enter: ") or event.start_date
-        new_end_date = self.get_date("Enter new event end date. If none, press enter: ") or event.end_date
-
-        all_day_prompt = input("Will this be an all day event or not? ").lower() or 'No'
-
-        if all_day_prompt == 'yes':
-            all_day = True
-            new_event_data = AllDayEvent(edit_event_id, new_event_name, new_event_desc,
-                                         all_day, new_start_date, new_end_date)
-        else:
-            all_day = False
-            new_start_time = self.get_time("Enter new event start time (HH:MM format): ") or event.start_time
-            new_end_time = self.get_time("Enter new event end time (HH:MM format): ") or event.end_time
-            new_event_data = TimedEvent(edit_event_id, new_event_name, new_event_desc,
-                                        all_day, new_start_date, new_end_date,
-                                        new_start_time, new_end_time)
-
-        self.events[date][edit_event_id] = new_event_data
-
-        print(f"Event with ID '{edit_event_id}' has been edited successfully.")
-
+        event_edit = EventEdit()
+        self.events = event_edit.event_editor(self.events, self.event_index)
         self.rebuild_index()
         self.save_agenda()
 
