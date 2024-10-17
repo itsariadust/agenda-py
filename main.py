@@ -42,22 +42,23 @@ class Agenda:
                             for date, subdict in self.events.items()
                             for event_id, event_obj in subdict.items()}
 
-    def modify_agenda(self, action, *args):
-        self.events = action(self.events, *args)
+    def add_event(self):
+        event_create = EventCreate()
+        self.events = event_create.event_constructor(self.events)
         self.rebuild_index()
         self.save_agenda()
 
-    def add_event(self):
-        event_create = EventCreate()
-        self.modify_agenda(event_create.event_constructor(self.events))
-
     def remove_event(self):
         event_remove = EventRemove()
-        self.modify_agenda(event_remove.event_remover(self.events, self.event_index))
+        self.events = event_remove.event_remover(self.events, self.event_index)
+        self.rebuild_index()
+        self.save_agenda()
 
     def edit_event(self):
         event_edit = EventEdit()
-        self.modify_agenda(event_edit.event_editor(self.events, self.event_index))
+        self.events = event_edit.event_editor(self.events, self.event_index)
+        self.rebuild_index()
+        self.save_agenda()
 
     def show_upcoming_events(self):
         today = datetime.now().date()
@@ -96,23 +97,6 @@ class Agenda:
         print(f"Event found!\n"
               f"{event}\n")
 
-    def menu(self, option):
-        menu_list = {
-            1: self.add_event,
-            2: self.remove_event,
-            3: self.edit_event,
-            4: self.search_event,
-            5: exit
-        }
-
-        menu_action = menu_list.get(option)
-
-        if not menu_action:
-            print("Invalid choice. Enter a valid choice.\n")
-            return
-
-        menu_action()
-
 def main():
     agenda = Agenda()
 
@@ -124,14 +108,16 @@ def main():
         print("3. Edit Event")
         print("4. Search Event")
         print("5. Exit")
+        choice = int(input("Enter your choice: "))
 
-        try:
-            choice = int(input("Input the number that you'd like to do: "))
-        except ValueError:
-            print("Invalid choice. Enter a valid choice.\n")
-            continue
+        match choice:
+            case 1: agenda.add_event()
+            case 2: agenda.remove_event()
+            case 3: agenda.edit_event()
+            case 4: agenda.search_event()
+            case 5: print("Exiting...") or exit()
+            case _: print("Invalid choice. Enter a valid choice.")
 
-        agenda.menu(choice)
 
 if __name__ == "__main__":
     main()
