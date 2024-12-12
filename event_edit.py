@@ -1,53 +1,63 @@
 from event import AllDayEvent, TimedEvent
-from date_time_utils import get_date, get_time
+from datetime import datetime
 
 class EventEdit:
     def __init__(self):
         pass
-    
-    def event_editor(self, events_dict, event_index):
-        edit_event_id = input("Enter the event ID of the event that you wish to edit: ")
 
-        if edit_event_id not in event_index:
-            print(f"No event with ID '{edit_event_id}' was found.")
+    def event_editor(self, events_dict, result):
+        print(events_dict)
+        event_id = result.get("id")
+        new_event_name = result.get("event_name")
+        new_event_desc = result.get("description")
+        new_start_date = datetime.strptime(result.get("start_date"), "%m-%d-%Y").date()
+        new_end_date = datetime.strptime(result.get("end_date"), "%m-%d-%Y").date()
+        is_all_day = result.get("is_all_day")
+
+        # Identify the current event and its date
+        original_date = None
+        for date, events in events_dict.items():
+            if event_id in events:
+                original_date = date
+                break
+
+        if original_date is None:
+            print(f"No event with ID '{event_id}' found in the current dictionary.")
             return events_dict
 
-        date, event = event_index[edit_event_id]
+        del events_dict[original_date][event_id]
 
-        new_event_name = input("Enter new event name. If none, press enter: ") or event.name
-        new_event_desc = input("Enter new event description. If none, press enter: ") or event.description
+        if not events_dict[original_date]:
+            del events_dict[original_date]
 
-        new_start_date = get_date("Enter new event start date. If none, press enter: ") or event.start_date
-        new_end_date = get_date("Enter new event end date. If none, press enter: ") or event.end_date
-
-        all_day_prompt = input("Will this be an all day event or not? ").lower() or 'No'
-
-        if all_day_prompt == 'yes':
-            new_event_data = self.all_day(edit_event_id, new_event_name, new_event_desc,
-                                                    new_start_date, new_end_date)
+        if is_all_day:
+            new_event_data = self.all_day(event_id, new_event_name, new_event_desc,
+                                          new_start_date, new_end_date)
         else:
-            new_event_data = self.timed(edit_event_id, new_event_name, new_event_desc,
-                                                  new_start_date, new_end_date, event)
+            new_start_time = result.get("start_time")
+            new_end_time = result.get("end_time")
+            new_event_data = self.timed(event_id, new_event_name, new_event_desc,
+                                        new_start_date, new_end_date, new_start_time, new_end_time)
 
-        events_dict[date][edit_event_id] = new_event_data
+        if new_start_date not in events_dict:
+            events_dict[new_start_date] = {}
 
-        print(f"Event with ID '{edit_event_id}' has been edited successfully.")
+        events_dict[new_start_date][event_id] = new_event_data
 
+        print(f"Event with ID '{event_id}' has been updated successfully.")
         return events_dict
 
     @staticmethod
     def all_day(edit_event_id, new_event_name, new_event_desc,
-                        new_start_date, new_end_date):
+                new_start_date, new_end_date):
         all_day = True
         return AllDayEvent(edit_event_id, new_event_name, new_event_desc,
                            all_day, new_start_date, new_end_date)
 
     @staticmethod
     def timed(edit_event_id, new_event_name, new_event_desc,
-                        new_start_date, new_end_date, event):
+              new_start_date, new_end_date, new_start_time, new_end_time):
         all_day = False
-        new_start_time = get_time("Enter new event start time (HH:MM format): ") or event.start_time
-        new_end_time = get_time("Enter new event end time (HH:MM format): ") or event.end_time
         return TimedEvent(edit_event_id, new_event_name, new_event_desc,
                           all_day, new_start_date, new_end_date,
                           new_start_time, new_end_time)

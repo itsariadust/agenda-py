@@ -11,20 +11,26 @@ class EventCreate:
         self.round_hour = hour_rounder(self.date_today)
         self.event_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
 
-    def event_constructor(self, events_dict):
-        event_name: str = input("Enter event name: ")
-        event_description: str = input("Enter event description. If none, press enter: ") or "No description given."
-        event_all_day: str or bool = input("Is this an all day event? ").lower() or "no"
-        event_start_date = get_date("Enter start date (MM-DD-YYYY): ") or self.date_today.date()
-        event_end_date = get_date("Enter end date (MM-DD-YYYY): ") or self.date_today.date()
+    def event_constructor(self, events_dict, event):
+        event_name: str = event["event_name"]
+        event_description: str = event["description"]
+        event_all_day: bool = event["is_all_day"]
+        event_start_date = datetime.strptime(event["start_date"], "%m-%d-%Y").date()
+        event_end_date = datetime.strptime(event["end_date"], "%m-%d-%Y").date()
 
-        if event_all_day == "no":
-            event_data = self.create_timed_event(self.event_id, event_name, event_description,
-                                                 event_start_date, event_end_date)
+        if not event_all_day:
+            event_data = self.create_timed_event(
+                self.event_id, event_name, event_description,
+                event_start_date, event_end_date,
+                event.get("start_time"), event.get("end_time")
+            )
         else:
-            event_data = self.create_all_day_event(self.event_id, event_name, event_description,
-                                                   event_start_date, event_end_date)
+            event_data = self.create_all_day_event(
+                self.event_id, event_name, event_description,
+                event_start_date, event_end_date
+            )
 
+        # Add to the events dictionary
         if event_start_date not in events_dict:
             events_dict[event_start_date] = {}
 
@@ -34,21 +40,26 @@ class EventCreate:
 
         return events_dict
 
-    def create_all_day_event(self, event_id, event_name, event_description, event_start_date,
-                             event_end_date):
+    def create_all_day_event(self, event_id, event_name, event_description, event_start_date, event_end_date):
         event_all_day = True
-        return AllDayEvent(event_id, event_name, event_description,
-                           event_all_day, event_start_date, event_end_date)
+        return AllDayEvent(
+            event_id, event_name, event_description,
+            event_all_day, event_start_date, event_end_date
+        )
 
-    def create_timed_event(self, event_id, event_name, event_description, event_start_date, event_end_date):
-
+    def create_timed_event(self, event_id, event_name, event_description, event_start_date,
+                           event_end_date, event_start_time, event_end_time):
         event_all_day = False
-        event_start_time = get_time("Enter start time (24-hour format): ") or self.round_hour
-        event_end_time = get_time("Enter end time (24-hour format): ") or self.round_hour + timedelta(hours=1)
+        # Parse times if provided
+        event_start_time = (
+            datetime.strptime(event_start_time, "%H:%M").time() if event_start_time else self.round_hour.time()
+        )
+        event_end_time = (
+            datetime.strptime(event_end_time, "%H:%M").time() if event_end_time else (self.round_hour + timedelta(hours=1)).time()
+        )
 
-        # if event_start_time > event_start_date: event_start_date = event_start_time.date()
-        # if event_end_time > event_end_date: event_end_date = event_end_time.date()
-
-        return TimedEvent(event_id, event_name, event_description,
-                          event_all_day, event_start_date, event_end_date,
-                          event_start_time, event_end_time)
+        return TimedEvent(
+            event_id, event_name, event_description,
+            event_all_day, event_start_date, event_end_date,
+            event_start_time, event_end_time
+        )
