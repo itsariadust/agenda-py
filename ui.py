@@ -63,6 +63,8 @@ class AgendaUI(ttk.Frame):
                 )
                 self.table.insert_row('end', row)
         self.table.load_table_data()
+        self.agenda.rebuild_index()
+        self.agenda.save_agenda()
 
     def sidebar(self):
         container = ttk.Frame(self)
@@ -105,8 +107,6 @@ class AgendaUI(ttk.Frame):
             event_creator = EventCreate()
             updated_events = event_creator.event_constructor(self.agenda.events, dialog.result)
             self.agenda.events = updated_events
-            self.agenda.rebuild_index()
-            self.agenda.save_agenda()
             self.refresh_table()
 
     def edit_event(self):
@@ -118,8 +118,6 @@ class AgendaUI(ttk.Frame):
             event_edit = EventEdit()
             updated_events = event_edit.event_editor(self.agenda.events, dialog.result)
             self.agenda.events = updated_events
-            self.agenda.rebuild_index()
-            self.agenda.save_agenda()
             self.refresh_table()
 
     def delete_event(self):
