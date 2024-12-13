@@ -20,7 +20,8 @@ class Agenda:
         else:
             day_greeting = "Good Evening"
 
-        print(f"{day_greeting}! Today is {datetime.now().strftime('%A, %B %d')}.")
+        greeting = f"{day_greeting}!\nToday is {datetime.now().strftime('%A, %B %d')}."
+        return greeting
 
     def save_agenda(self):
         with open(self.filename, 'wb') as file : pickle.dump(self.events, file)

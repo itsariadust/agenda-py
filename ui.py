@@ -87,11 +87,13 @@ class AgendaUI(ttk.Frame):
         container = ttk.Frame(self)
         container.pack(side=LEFT, anchor=N, padx=10, pady=10, fill=Y)
 
+        ttk.Label(master=container, text=f"{self.agenda.greeting()}", font=('Arial', 12)).pack(padx=5, pady=5, fill=X)
+
         self.date_var = ttk.StringVar()
         date_entry = DateEntry(
             master=container,
         )
-        date_entry.pack(padx=5, pady=5, fill=X, expand=YES)
+        date_entry.pack(padx=5, pady=5, fill=X)
         date_entry.bind("<FocusOut>", lambda e: self.update_selected_date(date_entry))
 
         add_btn = ttk.Button(

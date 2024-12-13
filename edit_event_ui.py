@@ -1,9 +1,7 @@
-from datetime import datetime
-
 import ttkbootstrap as ttk
 from ttkbootstrap.widgets import Entry, Checkbutton, DateEntry
 from tkinter.simpledialog import Dialog
-
+from datetime import datetime
 
 class EditEventDialog(Dialog):
     def __init__(self, parent, event, **kwargs):
