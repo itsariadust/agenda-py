@@ -3,7 +3,9 @@ from ttkbootstrap.tableview import Tableview
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import DateEntry
 
+from delete_event_ui import DeleteEventDialog
 from event_edit import EventEdit
+from event_remove import EventRemove
 from main import Agenda
 from add_event_ui import AddEventDialog
 from edit_event_ui import EditEventDialog
@@ -96,7 +98,7 @@ class AgendaUI(ttk.Frame):
             text="Delete",
             style=DANGER,
             width=6,
-            command="",
+            command=self.delete_event,
         )
         cancel_btn.pack(padx=5, pady=5, fill=X)
 
@@ -121,7 +123,16 @@ class AgendaUI(ttk.Frame):
             self.refresh_table()
 
     def delete_event(self):
-        dialog = AddEventDialog(self, title="Delete Event")
+        event_to_edit = self.selected_row
+        event_data = self.agenda.event_index[event_to_edit][1]
+        print(event_data.id)
+        dialog = DeleteEventDialog(self, title="Delete Event", event=event_data)
+
+        if dialog.result:
+            delete_event = EventRemove()
+            updated_events = delete_event.event_remover(event_data.id, self.agenda.events, self.agenda.event_index)
+            self.agenda.events = updated_events
+            self.refresh_table()
 
 if __name__ == "__main__":
     app = ttk.Window(title="Agenda",
