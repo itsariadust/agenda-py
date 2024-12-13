@@ -14,7 +14,6 @@ class EventEdit:
         new_end_date = datetime.strptime(result.get("end_date"), "%m-%d-%Y").date()
         is_all_day = result.get("is_all_day")
 
-        # Identify the current event and its date
         original_date = None
         for date, events in events_dict.items():
             if event_id in events:

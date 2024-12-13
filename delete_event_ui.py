@@ -8,7 +8,6 @@ class DeleteEventDialog(Dialog):
         super().__init__(parent, **kwargs)
 
     def body(self, master):
-        # Event Name
         ttk.Label(master, text=f"Are you sure you want to delete {self.event.name}?").grid(row=0, column=0, sticky=ttk.W)
 
     def apply(self):

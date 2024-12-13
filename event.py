@@ -9,7 +9,6 @@ class Event:
         self.start_date = start_date
         self.end_date = end_date
 
-
 class AllDayEvent(Event):
     def __init__(self, uid: str, name: str, description: str,
                  all_day: bool, start_date: datetime.date, end_date: datetime.date):

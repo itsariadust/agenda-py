@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from date_time_utils import hour_rounder
 from event import TimedEvent, AllDayEvent
 
-
 class EventCreate:
     def __init__(self):
         self.date_today = datetime.now()
