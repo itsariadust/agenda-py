@@ -1,14 +1,14 @@
-from datetime import datetime
 
 import ttkbootstrap as ttk
 from ttkbootstrap.tableview import Tableview
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import DateEntry
 
+from datetime import datetime
 from delete_event_ui import DeleteEventDialog
 from event_edit import EventEdit
 from event_remove import EventRemove
-from main import Agenda
+from agenda import Agenda
 from add_event_ui import AddEventDialog
 from edit_event_ui import EditEventDialog
 from event_create import EventCreate

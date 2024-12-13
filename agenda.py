@@ -37,9 +37,3 @@ class Agenda:
         self.event_index = {event_id: (date, event_obj)
                             for date, subdict in self.events.items()
                             for event_id, event_obj in subdict.items()}
-
-def main():
-    Agenda()
-
-if __name__ == "__main__":
-    main()
