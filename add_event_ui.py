@@ -4,6 +4,9 @@ from tkinter.simpledialog import Dialog
 
 
 class AddEventDialog(Dialog):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+
     def body(self, master):
         # Event Name
         ttk.Label(master, text="Event Name:").grid(row=0, column=0, sticky=ttk.W)
