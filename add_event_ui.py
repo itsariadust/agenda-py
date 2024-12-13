@@ -27,23 +27,23 @@ class AddEventDialog(Dialog):
         self.all_day_check.grid(row=2, column=1, padx=10, pady=5)
 
         # Start Date
-        ttk.Label(master, text="Start Date:").grid(row=3, column=0, sticky=ttk.W)
+        ttk.Label(master, text="Start Date (MM-DD-YYYY):").grid(row=3, column=0, sticky=ttk.W)
         self.start_date = DateEntry(master, dateformat="%m-%d-%Y")
         self.start_date.grid(row=3, column=1, padx=10, pady=5)
 
         # End Date
-        ttk.Label(master, text="End Date:").grid(row=4, column=0, sticky=ttk.W)
+        ttk.Label(master, text="End Date (MM-DD-YYYY):").grid(row=4, column=0, sticky=ttk.W)
         self.end_date = DateEntry(master, dateformat="%m-%d-%Y")
         self.end_date.grid(row=4, column=1, padx=10, pady=5)
 
         # Start Time (disabled if all-day event is checked)
-        ttk.Label(master, text="Start Time:").grid(row=5, column=0, sticky=ttk.W)
+        ttk.Label(master, text="Start Time (in 24-hour format):").grid(row=5, column=0, sticky=ttk.W)
         self.start_time = Entry(master)
         self.start_time.grid(row=5, column=1, padx=10, pady=5)
         self.start_time.config(state="disabled")
 
         # End Time (disabled if all-day event is checked)
-        ttk.Label(master, text="End Time:").grid(row=6, column=0, sticky=ttk.W)
+        ttk.Label(master, text="End Time (in 24-hour format):").grid(row=6, column=0, sticky=ttk.W)
         self.end_time = Entry(master)
         self.end_time.grid(row=6, column=1, padx=10, pady=5)
         self.end_time.config(state="disabled")

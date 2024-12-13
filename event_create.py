@@ -1,7 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
-from date_time_utils import get_date, get_time, hour_rounder
+from date_time_utils import hour_rounder
 from event import TimedEvent, AllDayEvent
 
 
