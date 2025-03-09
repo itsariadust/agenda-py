@@ -57,39 +57,28 @@ class AgendaUI(ttk.Frame):
         self.table.delete_rows()
         if self.selected_date:
             selected_date_events = self.agenda.events.get(self.selected_date)
-            for event_id, event_obj in selected_date_events.items():
-                start_time = datetime.strptime(getattr(event_obj, 'start_time', '00:00:00'), '%H:%M:%S')
-                end_time = datetime.strptime(getattr(event_obj, 'end_time', '00:00:00'), '%H:%M:%S')
-                formatted_st = start_time.strftime('%H:%M')
-                formatted_et = end_time.strftime('%H:%M')
-                row = (
-                    event_id,
-                    event_obj.name,
-                    event_obj.description,
-                    event_obj.all_day,
-                    f"{event_obj.start_date.strftime('%m-%d-%Y')} ({formatted_st})",
-                    f"{event_obj.end_date.strftime('%m-%d-%Y')} ({formatted_et})",
-                )
-                self.table.insert_row(values=row)
+            self.data_row(selected_date_events)
         else:
-            for event_date, events in self.agenda.events.items():
-                for event_id, event_obj in events.items():
-                    start_time = datetime.strptime(getattr(event_obj, 'start_time', '00:00:00'), '%H:%M:%S')
-                    end_time = datetime.strptime(getattr(event_obj, 'end_time', '00:00:00'), '%H:%M:%S')
-                    formatted_st = start_time.strftime('%H:%M')
-                    formatted_et = end_time.strftime('%H:%M')
-                    row = (
-                        event_id,
-                        event_obj.name,
-                        event_obj.description,
-                        event_obj.all_day,
-                        f"{event_obj.start_date.strftime('%m-%d-%Y')} ({formatted_st})",
-                        f"{event_obj.end_date.strftime('%m-%d-%Y')} ({formatted_et})",
-                    )
-                    self.table.insert_row(values=row)
+            for event_date, events in self.agenda.events.items(): self.data_row(events)
         self.table.load_table_data()
         self.agenda.rebuild_index()
         self.agenda.save_agenda()
+
+    def data_row(self, events):
+        for event_id, event_obj in events.items():
+            start_time = datetime.strptime(getattr(event_obj, 'start_time', '00:00:00'), '%H:%M:%S')
+            end_time = datetime.strptime(getattr(event_obj, 'end_time', '00:00:00'), '%H:%M:%S')
+            formatted_st = start_time.strftime('%H:%M')
+            formatted_et = end_time.strftime('%H:%M')
+            row = (
+                event_id,
+                event_obj.name,
+                event_obj.description,
+                event_obj.all_day,
+                f"{event_obj.start_date.strftime('%m-%d-%Y')} ({formatted_st})",
+                f"{event_obj.end_date.strftime('%m-%d-%Y')} ({formatted_et})",
+            )
+            self.table.insert_row(values=row)
 
     def sidebar(self):
         container = ttk.Frame(self)
